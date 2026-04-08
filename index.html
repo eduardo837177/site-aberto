@@ -1,11 +1,1071 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>Meu site</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>💣 Bomberman Lendário | SYP Games</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1a1e24 0%, #2d3436 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      padding: 10px;
+      touch-action: manipulation;
+    }
+
+    /* Tela inicial */
+    .start-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1a1e24 0%, #2d3436 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .start-content {
+      background: #2d5016;
+      padding: 40px 30px;
+      border-radius: 30px;
+      text-align: center;
+      color: white;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      border: 3px solid #ffd700;
+    }
+
+    .start-content h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+      text-shadow: 3px 3px 0 #1a3a0f;
+    }
+
+    .start-content h1 i {
+      color: #ff6b00;
+      margin: 0 5px;
+    }
+
+    .start-content p {
+      font-size: 18px;
+      margin-bottom: 30px;
+      opacity: 0.9;
+    }
+
+    .mode-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .mode-btn {
+      background: #ff6b00;
+      border: none;
+      color: white;
+      padding: 18px;
+      border-radius: 15px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 5px 0 #cc5500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .mode-btn.pc {
+      background: #0057ff;
+      box-shadow: 0 5px 0 #0044cc;
+    }
+
+    .mode-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #cc5500;
+    }
+
+    .mode-btn.pc:active {
+      box-shadow: 0 2px 0 #0044cc;
+    }
+
+    .mode-btn i {
+      font-size: 24px;
+    }
+
+    .start-footer {
+      font-size: 14px;
+      opacity: 0.7;
+      margin-top: 20px;
+    }
+
+    /* Game wrapper */
+    .game-wrapper {
+      background: #2d5016;
+      padding: 15px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      max-width: 100%;
+      position: relative;
+      display: none;
+    }
+
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      color: white;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .game-title {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .game-title i {
+      color: #ff6b00;
+      margin-right: 5px;
+    }
+
+    .stats {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(0,0,0,0.3);
+      padding: 4px 10px;
+      border-radius: 30px;
+      font-size: 14px;
+    }
+
+    .stat span {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .canvas-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    #gameCanvas {
+      border: 3px solid #1a3a0f;
+      border-radius: 10px;
+      background: #3a6b1e;
+      display: block;
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      touch-action: none;
+    }
+
+    /* Controles Mobile */
+    .mobile-controls {
+      margin-top: 15px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .dpad-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .d-pad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      width: 180px;
+    }
+
+    .d-pad button {
+      background: rgba(255,255,255,0.15);
+      border: 2px solid rgba(255,255,255,0.3);
+      color: white;
+      font-size: 28px;
+      padding: 15px 0;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.1s;
+      touch-action: manipulation;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .d-pad button:active {
+      background: rgba(255,107,0,0.6);
+      transform: scale(0.95);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-btn {
+      background: #ff6b00;
+      border: none;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      touch-action: manipulation;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 0 #cc5500;
+      transition: all 0.1s;
+    }
+
+    .action-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #cc5500;
+    }
+
+    .menu-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 5px;
+    }
+
+    .menu-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    /* Modals */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: #2d5016;
+      padding: 30px 20px;
+      border-radius: 20px;
+      text-align: center;
+      color: white;
+      max-width: 350px;
+      width: 100%;
+    }
+
+    .modal-content h2 {
+      font-size: 36px;
+      margin-bottom: 15px;
+    }
+
+    .modal-content p {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .boss-alert {
+      color: #ff4757;
+      font-size: 24px;
+      font-weight: bold;
+      animation: pulse 1s infinite;
+      margin: 15px 0;
+      line-height: 1.4;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .boss-health-container {
+      margin-top: 8px;
+      display: none;
+    }
+
+    .boss-health-bar {
+      width: 100%;
+      height: 15px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .boss-health-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff4757, #ff6b00);
+      width: 100%;
+      transition: width 0.3s;
+    }
+
+    /* Easter egg messages */
+    .random-message {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #00ff00;
+      font-size: 18px;
+      font-weight: bold;
+      text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+      z-index: 10;
+      animation: slideDown 0.5s ease-out;
+      pointer-events: none;
+      background: rgba(0,0,0,0.5);
+      padding: 8px 15px;
+      border-radius: 30px;
+      white-space: nowrap;
+    }
+
+    .center-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #ffd700;
+      font-size: 24px;
+      font-weight: bold;
+      text-shadow: 4px 4px 8px rgba(0,0,0,0.9);
+      z-index: 10;
+      animation: zoomText 2s ease-in-out infinite;
+      pointer-events: none;
+      text-align: center;
+    }
+
+    .corner-message {
+      position: absolute;
+      bottom: 80px;
+      right: 20px;
+      color: #ff6b00;
+      font-size: 18px;
+      font-weight: bold;
+      text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+      z-index: 10;
+      animation: glowText 2s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .left-message {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      color: #ff69b4;
+      font-size: 20px;
+      font-weight: bold;
+      text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+      z-index: 10;
+      animation: floatLeft 2.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .top-right-message {
+      position: absolute;
+      top: 50px;
+      right: 20px;
+      color: #00ced1;
+      font-size: 16px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+      z-index: 10;
+      animation: rotateIn 1s ease-out;
+      pointer-events: none;
+    }
+
+    .rainbow-message {
+      position: absolute;
+      top: 40%;
+      left: 10px;
+      font-size: 22px;
+      font-weight: bold;
+      text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+      z-index: 10;
+      animation: rainbow 3s infinite;
+      pointer-events: none;
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+    }
+
+    @keyframes glowText {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; text-shadow: 4px 4px 12px rgba(255,215,0,0.8); }
+    }
+
+    @keyframes zoomText {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.08); }
+    }
+
+    @keyframes slideDown {
+      from { transform: translate(-50%, -100px); opacity: 0; }
+      to { transform: translate(-50%, 0); opacity: 1; }
+    }
+
+    @keyframes floatLeft {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(15px); }
+    }
+
+    @keyframes rotateIn {
+      from { transform: rotate(-180deg); opacity: 0; }
+      to { transform: rotate(0); opacity: 1; }
+    }
+
+    @keyframes rainbow {
+      0% { color: #ff0000; }
+      17% { color: #ff8800; }
+      33% { color: #ffff00; }
+      50% { color: #00ff00; }
+      67% { color: #0088ff; }
+      83% { color: #8800ff; }
+      100% { color: #ff0000; }
+    }
+
+    /* Instruções desktop */
+    .desktop-instructions {
+      color: white;
+      font-size: 14px;
+      gap: 15px;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .key {
+      background: rgba(255,255,255,0.2);
+      padding: 4px 8px;
+      border-radius: 5px;
+      margin: 0 3px;
+    }
+
+    /* Botão voltar ao menu */
+    .back-btn {
+      background: rgba(0,0,0,0.3);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-  <h1>Olá, Mundo!</h1>
-  <p>Esse é meu site no GitHub Pages.</p>
+<!-- TELA INICIAL -->
+<div class="start-screen" id="startScreen">
+  <div class="start-content">
+    <h1>
+      <i class="fas fa-bomb"></i>
+      BOMBERMAN
+      <i class="fas fa-crown"></i>
+    </h1>
+    <p>100 Níveis • 10 Chefões • 12 Easter Eggs</p>
+    <div class="mode-buttons">
+      <button class="mode-btn" onclick="startGame('mobile')">
+        <i class="fas fa-mobile-alt"></i>
+        MODO CELULAR
+        <i class="fas fa-gamepad"></i>
+      </button>
+      <button class="mode-btn pc" onclick="startGame('pc')">
+        <i class="fas fa-desktop"></i>
+        MODO PC
+        <i class="fas fa-keyboard"></i>
+      </button>
+    </div>
+    <div class="start-footer">
+      <i class="fas fa-egg"></i> Encontre os easter eggs escondidos!
+    </div>
+  </div>
+</div>
+
+<!-- GAME WRAPPER -->
+<div class="game-wrapper" id="gameWrapper">
+  <div class="game-header">
+    <div class="game-title">
+      <i class="fas fa-bomb"></i>
+      BOMBERMAN LENDÁRIO
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <i class="fas fa-heart" style="color: #ff4757;"></i>
+        <span id="lives">5</span>
+      </div>
+      <div class="stat">
+        <i class="fas fa-skull" style="color: #ffa502;"></i>
+        <span id="enemiesLeft">0</span>
+      </div>
+      <div class="stat">
+        <i class="fas fa-level-up-alt" style="color: #00C853;"></i>
+        <span id="level">1</span>/100
+      </div>
+      <div class="stat">
+        <i class="fas fa-egg" style="color: #ffd700;"></i>
+        <span id="eggsFound">0</span>/12
+      </div>
+    </div>
+    <button class="back-btn" onclick="backToMenu()">
+      <i class="fas fa-arrow-left"></i> Menu
+    </button>
+  </div>
+
+  <div class="canvas-container">
+    <canvas id="gameCanvas" width="600" height="600"></canvas>
+    <div id="messageContainer"></div>
+  </div>
+
+  <div id="bossHealth" class="boss-health-container">
+    <div style="color: white; margin-bottom: 3px; font-size: 14px;">
+      <span><i class="fas fa-crown"></i> CHEFÃO</span>
+      <span id="bossName">Lory</span>
+      <span id="bossHp">10/10</span>
+    </div>
+    <div class="boss-health-bar">
+      <div class="boss-health-fill" id="bossHealthFill"></div>
+    </div>
+  </div>
+
+  <!-- Controles Mobile -->
+  <div class="mobile-controls" id="mobileControls">
+    <div class="dpad-container">
+      <div class="d-pad">
+        <div></div>
+        <button ontouchstart="movePlayer(0,-1)" onmousedown="movePlayer(0,-1)">
+          <i class="fas fa-arrow-up"></i>
+        </button>
+        <div></div>
+        <button ontouchstart="movePlayer(-1,0)" onmousedown="movePlayer(-1,0)">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <button ontouchstart="movePlayer(0,1)" onmousedown="movePlayer(0,1)">
+          <i class="fas fa-arrow-down"></i>
+        </button>
+        <button ontouchstart="movePlayer(1,0)" onmousedown="movePlayer(1,0)">
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+      
+      <div class="action-buttons">
+        <button class="action-btn" ontouchstart="plantBomb()" onmousedown="plantBomb()">
+          <i class="fas fa-bomb"></i> 💣
+        </button>
+      </div>
+    </div>
+    
+    <div class="menu-buttons">
+      <button class="menu-btn" onclick="nextLevel()">
+        <i class="fas fa-forward"></i> Próximo
+      </button>
+      <button class="menu-btn" onclick="resetGame()">
+        <i class="fas fa-redo-alt"></i> Reiniciar
+      </button>
+    </div>
+  </div>
+
+  <!-- Instruções Desktop -->
+  <div class="desktop-instructions" id="desktopInstructions">
+    <span><span class="key">←↑↓→</span> Mover</span>
+    <span><span class="key">ESPAÇO</span> Bomba</span>
+    <span><span class="key">L</span> Próximo</span>
+  </div>
+</div>
+
+<!-- Modal de Chefão -->
+<div class="modal" id="bossModal">
+  <div class="modal-content">
+    <h2><i class="fas fa-crown" style="color: #ffd700;"></i> CHEFÃO LENDÁRIO!</h2>
+    <div class="boss-alert" id="bossAlertText">Nível 10 - Lory</div>
+    <p id="bossDescription">O chapeleiro chegou!</p>
+    <button class="action-btn" onclick="startBossFight()" style="margin: 0 auto;">
+      COMEÇAR LUTA!
+    </button>
+  </div>
+</div>
+
+<!-- Modal de Game Over -->
+<div class="modal" id="gameOverModal">
+  <div class="modal-content">
+    <h2><i class="fas fa-skull"></i> GAME OVER</h2>
+    <p>Nível: <span id="finalLevel">1</span></p>
+    <p>Chefões: <span id="finalBosses">0</span>/10</p>
+    <p>Easter Eggs: <span id="finalEggs">0</span>/12</p>
+    <button class="action-btn" onclick="resetGame()" style="margin: 0 auto;">
+      Jogar Novamente
+    </button>
+  </div>
+</div>
+
+<!-- Modal de Vitória -->
+<div class="modal" id="winModal">
+  <div class="modal-content">
+    <h2><i class="fas fa-trophy" style="color: #ffd700;"></i> VITÓRIA!</h2>
+    <p>🎉 PARABÉNS! 🎉</p>
+    <p>100 níveis completos!</p>
+    <p>10 chefões derrotados!</p>
+    <p>12 easter eggs encontrados!</p>
+    <button class="action-btn" onclick="resetGame()" style="margin: 0 auto;">
+      Jogar Novamente
+    </button>
+  </div>
+</div>
+
+<script>
+  // ===== MODO DE JOGO =====
+  let gameMode = 'pc';
+  
+  const startScreen = document.getElementById('startScreen');
+  const gameWrapper = document.getElementById('gameWrapper');
+  const mobileControls = document.getElementById('mobileControls');
+  const desktopInstructions = document.getElementById('desktopInstructions');
+  
+  function startGame(mode) {
+    gameMode = mode;
+    startScreen.style.display = 'none';
+    gameWrapper.style.display = 'block';
+    
+    if (mode === 'mobile') {
+      mobileControls.style.display = 'flex';
+      desktopInstructions.style.display = 'none';
+    } else {
+      mobileControls.style.display = 'none';
+      desktopInstructions.style.display = 'flex';
+    }
+    
+    resetGame();
+  }
+  
+  function backToMenu() {
+    game.gameOver = true;
+    startScreen.style.display = 'flex';
+    gameWrapper.style.display = 'none';
+    document.getElementById('bossModal').style.display = 'none';
+    document.getElementById('gameOverModal').style.display = 'none';
+    document.getElementById('winModal').style.display = 'none';
+  }
+  
+  // ===== CONFIGURAÇÕES DO JOGO =====
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  
+  const GRID_SIZE = 15;
+  const CELL_SIZE = 600 / GRID_SIZE;
+  
+  // 12 EASTER EGGS
+  const EASTER_EGGS = {
+    7: { text: 'irma do lorenzo parece assombraçao', type: 'random' },
+    13: { text: 'saudades do nosso femboy !', type: 'center' },
+    23: { text: 'CAI NÃO CHIQUINHO', type: 'center' },
+    33: { text: 'nao pege a galinha gustavo !', type: 'corner' },
+    42: { text: 'theo lave o bumbum', type: 'left-message' },
+    45: { text: 'NÃO COMA A GALINHA GUSTAVO', type: 'random' },
+    55: { text: 'matheus vai tomar no meio do seu cu', type: 'top-right-message' },
+    67: { text: 'LENDÁRIO SIX SEVEN 67', type: 'rainbow-message' },
+    69: { text: 'o melhor !', type: 'corner' },
+    77: { text: 'ta bom entao lenda', type: 'center' },
+    78: { text: 'LARGE DE INCESTO MATHEUS', type: 'random' },
+    88: { text: 'cala a boca almoço', type: 'left-message' },
+    99: { text: 'autistaaaaaaaaaaaaa', type: 'top-right-message' }
+  };
+  
+  // CHEFÕES
+  const BOSSES = {
+    10: { name: '🎩 LORY O CHAPELEIRA', health: 15, color: '#8B4513', description: 'O mestre dos chapéus!' },
+    20: { name: '🐺 GT LOBISOMEN', health: 20, color: '#4A3728', description: 'Uivo da meia-noite!' },
+    30: { name: '👑 SEBOZO NEGO', health: 25, color: '#2C1810', description: 'Rei da malandragem!' },
+    40: { name: '🐔 MANEL GALINZE', health: 30, color: '#FFD700', description: 'Cuidado com o bico!' },
+    50: { name: '💀 MATH INCESTUOSO', health: 35, color: '#6B238E', description: 'O proibido!' },
+    60: { name: '⚽ BOLA MATADOR', health: 40, color: '#FF4500', description: 'Chute certeiro!' },
+    70: { name: '🐒 TH MACACO DO BOGA PELUDO', health: 45, color: '#D2691E', description: 'Primata supremo!' },
+    80: { name: '🎈 MR CABEÇÃO', health: 50, color: '#FF1493', description: 'Cabeça gigante!' },
+    90: { name: '🌪️ BAFÃO AURA', health: 60, color: '#00CED1', description: 'Sinta o bafo quente!' },
+    100: { name: '👁️ LENDÁRIO SIX SEVEN 67', health: 100, color: '#FFD700', description: 'O DEUS SUPREMO!' }
+  };
+  
+  let game = {
+    player: { x: 1, y: 1 },
+    enemies: [],
+    boss: null,
+    bombs: [],
+    explosions: [],
+    walls: [],
+    destructible: [],
+    lives: 5,
+    level: 1,
+    bossesDefeated: 0,
+    eggsFound: 0,
+    eggsFoundList: [],
+    gameOver: false,
+    win: false,
+    paused: false,
+    isBossLevel: false,
+    waitingBoss: false,
+    bombCooldown: 0
+  };
+  
+  let keys = {};
+  
+  // ===== FUNÇÕES DO JOGO =====
+  function showEasterEgg(level) {
+    const eggData = EASTER_EGGS[level];
+    if (!eggData) return;
+    
+    if (!game.eggsFoundList.includes(level)) {
+      game.eggsFoundList.push(level);
+      game.eggsFound++;
+      updateUI();
+    }
+    
+    const container = document.getElementById('messageContainer');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = eggData.type;
+    messageDiv.textContent = eggData.text;
+    
+    if (eggData.type === 'left-message') {
+      messageDiv.style.cssText = 'position:absolute;bottom:20px;left:20px;color:#ff69b4;font-size:20px;font-weight:bold;text-shadow:3px 3px 6px rgba(0,0,0,0.8);animation:floatLeft 2.5s infinite;pointer-events:none;';
+    } else if (eggData.type === 'top-right-message') {
+      messageDiv.style.cssText = 'position:absolute;top:50px;right:20px;color:#00ced1;font-size:16px;font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.8);animation:rotateIn 1s;pointer-events:none;';
+    } else if (eggData.type === 'rainbow-message') {
+      messageDiv.style.cssText = 'position:absolute;top:40%;left:10px;font-size:22px;font-weight:bold;text-shadow:3px 3px 6px rgba(0,0,0,0.8);animation:rainbow 3s infinite;pointer-events:none;writing-mode:vertical-rl;text-orientation:upright;';
+    }
+    
+    container.appendChild(messageDiv);
+    setTimeout(() => messageDiv.remove(), 4000);
+  }
+  
+  function initLevel() {
+    game.player = { x: 1, y: 1 };
+    game.enemies = [];
+    game.boss = null;
+    game.bombs = [];
+    game.explosions = [];
+    game.bombCooldown = 0;
+    game.isBossLevel = (game.level % 10 === 0);
+    
+    if (game.isBossLevel) {
+      createBossArena();
+    } else {
+      createNormalMap();
+      createEnemies();
+    }
+    
+    updateUI();
+    showEasterEgg(game.level);
+    
+    if (game.isBossLevel) {
+      showBossWarning();
+    }
+  }
+  
+  function createNormalMap() {
+    game.walls = [];
+    game.destructible = [];
+    
+    for (let i = 0; i < GRID_SIZE; i++) {
+      game.walls.push({ x: i, y: 0 }, { x: i, y: GRID_SIZE - 1 }, { x: 0, y: i }, { x: GRID_SIZE - 1, y: i });
+    }
+    for (let y = 2; y < GRID_SIZE - 2; y += 2) {
+      for (let x = 2; x < GRID_SIZE - 2; x += 2) {
+        game.walls.push({ x, y });
+      }
+    }
+    for (let y = 1; y < GRID_SIZE - 1; y++) {
+      for (let x = 1; x < GRID_SIZE - 1; x++) {
+        if (!game.walls.some(w => w.x === x && w.y === y)) {
+          if (Math.random() < 0.4 && !(x === 1 && y === 1) && !(x === 2 && y === 1) && !(x === 1 && y === 2)) {
+            game.destructible.push({ x, y });
+          }
+        }
+      }
+    }
+  }
+  
+  function createBossArena() {
+    game.walls = [];
+    game.destructible = [];
+    for (let i = 0; i < GRID_SIZE; i++) {
+      game.walls.push({ x: i, y: 0 }, { x: i, y: GRID_SIZE - 1 }, { x: 0, y: i }, { x: GRID_SIZE - 1, y: i });
+    }
+    const bossData = BOSSES[game.level];
+    game.boss = {
+      x: 7, y: 7,
+      health: bossData.health,
+      maxHealth: bossData.health,
+      name: bossData.name,
+      color: bossData.color,
+      description: bossData.description,
+      moveTimer: 0
+    };
+    document.getElementById('bossHealth').style.display = 'block';
+    updateBossUI();
+  }
+  
+  function createEnemies() {
+    const count = Math.min(3 + Math.floor(game.level / 5), 8);
+    for (let i = 0; i < count; i++) {
+      let x, y;
+      do {
+        x = Math.floor(Math.random() * (GRID_SIZE - 2)) + 1;
+        y = Math.floor(Math.random() * (GRID_SIZE - 2)) + 1;
+      } while (isObstacle(x, y) || (x === 1 && y === 1));
+      game.enemies.push({ x, y, dir: Math.floor(Math.random() * 4), moveTimer: 0 });
+    }
+  }
+  
+  function isObstacle(x, y) {
+    return game.walls.some(w => w.x === x && w.y === y) || game.destructible.some(w => w.x === x && w.y === y);
+  }
+  
+  function canMove(x, y, ignoreBombs = false) {
+    if (x < 0 || x >= GRID_SIZE || y < 0 || y >= GRID_SIZE) return false;
+    if (game.walls.some(w => w.x === x && w.y === y)) return false;
+    if (game.destructible.some(w => w.x === x && w.y === y)) return false;
+    if (!ignoreBombs && game.bombs.some(b => b.x === x && b.y === y)) return false;
+    if (game.boss && game.boss.x === x && game.boss.y === y) return false;
+    if (game.enemies.some(e => e.x === x && e.y === y)) return false;
+    return true;
+  }
+  
+  function movePlayer(dx, dy) {
+    if (game.gameOver || game.win || game.paused || game.waitingBoss) return;
+    const nx = game.player.x + dx, ny = game.player.y + dy;
+    if (canMove(nx, ny)) { game.player.x = nx; game.player.y = ny; }
+  }
+  
+  function plantBomb() {
+    if (game.gameOver || game.win || game.paused || game.waitingBoss) return;
+    if (game.bombCooldown > 0) return;
+    if (game.bombs.some(b => b.x === game.player.x && b.y === game.player.y)) return;
+    game.bombs.push({ x: game.player.x, y: game.player.y, timer: 120, power: 2 });
+    game.bombCooldown = 20;
+  }
+  
+  function update() {
+    if (game.gameOver || game.win || game.paused || game.waitingBoss) return;
+    if (game.bombCooldown > 0) game.bombCooldown--;
+    
+    game.bombs = game.bombs.filter(bomb => {
+      bomb.timer--;
+      if (bomb.timer <= 0) { explode(bomb.x, bomb.y, bomb.power); return false; }
+      return true;
+    });
+    
+    game.explosions = game.explosions.filter(exp => { exp.timer--; return exp.timer > 0; });
+    
+    if (!game.isBossLevel) {
+      game.enemies.forEach(enemy => {
+        if (enemy.moveTimer > 0) { enemy.moveTimer--; return; }
+        if (Math.random() < 0.3) enemy.dir = Math.floor(Math.random() * 4);
+        let nx = enemy.x, ny = enemy.y;
+        switch(enemy.dir) { case 0: ny--; break; case 1: ny++; break; case 2: nx--; break; case 3: nx++; break; }
+        if (canMove(nx, ny) && !(nx === game.player.x && ny === game.player.y)) { enemy.x = nx; enemy.y = ny; }
+        enemy.moveTimer = 8;
+      });
+    }
+    
+    if (game.boss) {
+      if (game.boss.moveTimer > 0) { game.boss.moveTimer--; } else {
+        const dx = Math.sign(game.player.x - game.boss.x), dy = Math.sign(game.player.y - game.boss.y);
+        if (Math.random() < 0.7) {
+          if (Math.abs(dx) > Math.abs(dy)) { const nx = game.boss.x + dx; if (canMove(nx, game.boss.y, true)) game.boss.x = nx; }
+          else { const ny = game.boss.y + dy; if (canMove(game.boss.x, ny, true)) game.boss.y = ny; }
+        }
+        game.boss.moveTimer = 10;
+      }
+    }
+    
+    game.enemies.forEach(enemy => { if (enemy.x === game.player.x && enemy.y === game.player.y) takeDamage(); });
+    if (game.boss && game.boss.x === game.player.x && game.boss.y === game.player.y) takeDamage();
+    
+    if (!game.isBossLevel && game.enemies.length === 0) levelComplete();
+    if (game.isBossLevel && game.boss && game.boss.health <= 0) bossDefeated();
+    updateUI();
+  }
+  
+  function explode(x, y, power) {
+    const dirs = [{dx:0,dy:0},{dx:1,dy:0},{dx:-1,dy:0},{dx:0,dy:1},{dx:0,dy:-1}];
+    dirs.forEach(dir => {
+      for (let i = 0; i <= power; i++) {
+        const ex = x + dir.dx * i, ey = y + dir.dy * i;
+        if (game.walls.some(w => w.x === ex && w.y === ey)) break;
+        game.explosions.push({ x: ex, y: ey, timer: 20 });
+        const wallIdx = game.destructible.findIndex(w => w.x === ex && w.y === ey);
+        if (wallIdx !== -1) { game.destructible.splice(wallIdx, 1); break; }
+        if (ex === game.player.x && ey === game.player.y) takeDamage();
+        game.enemies = game.enemies.filter(e => !(e.x === ex && e.y === ey));
+        if (game.boss && game.boss.x === ex && game.boss.y === ey) { game.boss.health--; updateBossUI(); }
+      }
+    });
+  }
+  
+  function takeDamage() {
+    game.lives--;
+    if (game.lives <= 0) gameOver();
+    else { game.player.x = 1; game.player.y = 1; }
+    updateUI();
+  }
+  
+  function levelComplete() {
+    if (game.level === 100) { game.win = true; document.getElementById('winModal').style.display = 'flex'; }
+    else { game.level++; initLevel(); }
+  }
+  
+  function bossDefeated() {
+    game.bossesDefeated++;
+    game.boss = null;
+    document.getElementById('bossHealth').style.display = 'none';
+    levelComplete();
+  }
+  
+  function nextLevel() {
+    if (game.gameOver || game.win) return;
+    if (game.level < 100) { game.level++; initLevel(); }
+  }
+  
+  function showBossWarning() {
+    game.waitingBoss = true;
+    const boss = BOSSES[game.level];
+    document.getElementById('bossAlertText').innerHTML = `NÍVEL ${game.level}<br>${boss.name}`;
+    document.getElementById('bossDescription').textContent = boss.description;
+    document.getElementById('bossModal').style.display = 'flex';
+  }
+  
+  function startBossFight() {
+    document.getElementById('bossModal').style.display = 'none';
+    game.waitingBoss = false;
+  }
+  
+  function updateBossUI() {
+    if (game.boss) {
+      const percent = (game.boss.health / game.boss.maxHealth) * 100;
+      document.getElementById('bossName').textContent = game.boss.name;
+      document.getElementById('bossHp').textContent = `${game.boss.health}/${game.boss.maxHealth}`;
+      document.getElementById('bossHealthFill').style.width = percent + '%';
+    }
+  }
+  
+  function updateUI() {
+    document.getElementById('lives').textContent = game.lives;
+    document.getElementById('enemiesLeft').textContent = game.isBossLevel ? 'CHEFÃO' : game.enemies.length;
+    document.getElementById('level').textContent = game.level;
+    document.getElementById('eggsFound').textContent = game.eggsFound;
+  }
+  
+  function gameOver() {
+    game.gameOver = true;
+    document.getElementById('finalLevel').textContent = game.level;
+    document.getElementById('finalBosses').textContent = game.bossesDefeated;
+    document.getElementById('finalEggs').textContent = game.eggsFound;
+    document.getElementById('gameOverModal').style.display = 'flex';
+  }
+  
+  function resetGame() {
+    game = {
+      player: { x: 1, y: 1 },
+      enemies: [], boss: null, bombs: [], explosions: [], walls: [], destructible: [],
+      lives: 5, level: 1, bossesDefeated: 0, eggsFound: 0, eggsFoundList: [],
+      gameOver: false, win: false, paused: false, isBossLevel: false, waitingBoss: false, bombCooldown: 0
+    };
+    document.getElementById('gameOverModal').style.display = 'none';
+    document.getElementById('winModal').style.display = 'none';
+    document.getElementById('bossModal').style.display = 'none';
+    document.getElementById('bossHealth').style.display = 'none';
+    document.getElementById('messageContainer').innerHTML = '';
+    initLevel();
+  }
+  
+  function render() {
+    ctx.clearRect(0, 0, 600, 600);
+    ctx.strokeStyle = '#1a3a0f'; ctx.lineWidth = 0.5;
+    for (let i = 0; i <= GRID_SIZE; i++) {
+      ctx.beginPath(); ctx.moveTo(i * CELL_SIZE, 0); ctx.lineTo(i * CELL_SIZE, 600); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, i * CELL_SIZE); ctx.lineTo(600, i * CELL_SIZE); ctx.stroke();
+    }
+    ctx.fillStyle = '#8B7355'; game.walls.forEach(w => ctx.fillRect(w.x * CELL_SIZE, w.y * CELL_SIZE, CELL_SIZE, CELL_SIZE));
+    ctx.fillStyle = '#D2691E'; game.destructible.forEach(w => ctx.fillRect(w.x * CELL_SIZE + 2, w.y * CELL_SIZE + 2, CELL_SIZE - 4, CELL_SIZE - 4));
+    game.bombs.forEach(b => {
+      ctx.fillStyle = '#1a1e24'; ctx.beginPath(); ctx.arc(b.x * CELL_SIZE + CELL_SIZE/2, b.y * CELL_SIZE + CELL_SIZE/2, CELL_SIZE/3, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = 'white'; ctx.font = 'bold 14px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(Math.ceil(b.timer / 60), b.x * CELL_SIZE + CELL_SIZE/2, b.y * CELL_SIZE + CELL_SIZE/2);
+    });
+    game.explosions.forEach(e => { ctx.fillStyle = '#ff6b00'; ctx.beginPath(); ctx.arc(e.x * CELL_SIZE + CELL_SIZE/2, e.y * CELL_SIZE + CELL_SIZE/2, CELL_SIZE/2, 0, Math.PI*2); ctx.fill(); });
+    game.enemies.forEach(e => {
+      ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.arc(e.x * CELL_SIZE + CELL_SIZE/2, e.y * CELL_SIZE + CELL_SIZE/2, CELL_SIZE/3, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(e.x * CELL_SIZE + CELL_SIZE/2 - 5, e.y * CELL_SIZE + CELL_SIZE/2 - 3, 3, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(e.x * CELL_SIZE + CELL_SIZE/2 + 5, e.y * CELL_SIZE + CELL_SIZE/2 - 3, 3, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#1a1e24'; ctx.beginPath(); ctx.arc(e.x * CELL_SIZE + CELL_SIZE/2 - 5, e.y * CELL_SIZE + CELL_SIZE/2 - 3, 2, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(e.x * CELL_SIZE + CELL_SIZE/2 + 5, e.y * CELL_SIZE + CELL_SIZE/2 - 3, 2, 0, Math.PI*2); ctx.fill();
+    });
+    if (game.boss) {
+      ctx.fillStyle = game.boss.color; ctx.beginPath(); ctx.arc(game.boss.x * CELL_SIZE + CELL_SIZE/2, game.boss.y * CELL_SIZE + CELL_SIZE/2, CELL_SIZE/1.5, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = 'white'; ctx.font = 'bold 16px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('👑', game.boss.x * CELL_SIZE + CELL_SIZE/2, game.boss.y * CELL_SIZE + CELL_SIZE/2 - 5);
+    }
+    ctx.fillStyle = '#00C853'; ctx.beginPath(); ctx.arc(game.player.x * CELL_SIZE + CELL_SIZE/2, game.player.y * CELL_SIZE + CELL_SIZE/2, CELL_SIZE/3, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#0057FF'; ctx.beginPath(); ctx.arc(game.player.x * CELL_SIZE + CELL_SIZE/2, game.player.y * CELL_SIZE + CELL_SIZE/3, CELL_SIZE/4, 0, Math.PI, true); ctx.fill();
+  }
+  
+  // ===== CONTROLES =====
+  document.addEventListener('keydown', (e) => {
+    if (gameMode !== 'pc') return;
+    keys[e.key] = true;
+    if (e.key === ' ') { e.preventDefault(); plantBomb(); }
+    if (e.key === 'l' || e.key === 'L') nextLevel();
+    if (keys['ArrowUp']) movePlayer(0, -1);
+    if (keys['ArrowDown']) movePlayer(0, 1);
+    if (keys['ArrowLeft']) movePlayer(-1, 0);
+    if (keys['ArrowRight']) movePlayer(1, 0);
+  });
+  
+  document.addEventListener('keyup', (e) => { keys[e.key] = false; });
+  
+  // ===== LOOP DO JOGO =====
+  function tick() { 
+    update(); 
+    render(); 
+    requestAnimationFrame(tick); 
+  }
+  
+  tick();
+</script>
 </body>
 </html>
